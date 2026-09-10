@@ -11,9 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.aiu.tdminsight.domain.model.VancomycinWorkflow
+import com.aiu.tdminsight.ui.input.PatientFormScreen
+import com.aiu.tdminsight.ui.input.WorkflowSelectionScreen
 
 /**
  * Top-level navigation graph for the app. Every destination here is a
@@ -26,18 +31,28 @@ import androidx.navigation.compose.rememberNavController
 fun TdmNavGraph(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = Routes.WORKFLOW_SELECTION) {
         composable(Routes.WORKFLOW_SELECTION) {
-            PlaceholderScreen(
-                title = "Workflow Selection",
-                description = "Vancomycin Pre / Post / Pre+Post selection lands here in Phase 3.1.",
-                onNext = { navController.navigate(Routes.INPUT_FORM) }
+            WorkflowSelectionScreen(
+                onWorkflowSelected = { workflow -> navController.navigate(Routes.inputForm(workflow)) }
             )
         }
-        composable(Routes.INPUT_FORM) {
-            PlaceholderScreen(
-                title = "Patient & Workflow Input",
-                description = "The dynamic patient and workflow input form lands here in Phase 3.2/3.3.",
-                onNext = { navController.navigate(Routes.RESULTS) }
-            )
+        composable(
+            route = Routes.INPUT_FORM,
+            arguments = listOf(navArgument(Routes.INPUT_FORM_ARG_WORKFLOW) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val workflowName = backStackEntry.arguments?.getString(Routes.INPUT_FORM_ARG_WORKFLOW)
+            val workflow = workflowName?.let { runCatching { VancomycinWorkflow.valueOf(it) }.getOrNull() }
+            if (workflow == null) {
+                PlaceholderScreen(
+                    title = "Patient & Workflow Input",
+                    description = "No workflow was selected — go back and choose one.",
+                    onNext = null
+                )
+            } else {
+                PatientFormScreen(
+                    workflow = workflow,
+                    onContinue = { navController.navigate(Routes.RESULTS) }
+                )
+            }
         }
         composable(Routes.RESULTS) {
             PlaceholderScreen(
