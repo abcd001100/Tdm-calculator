@@ -25,11 +25,12 @@ import com.aiu.tdminsight.domain.model.WorkflowInput
  * stays visible. A "View Explanation" button opens the step-by-step
  * breakdown (Phase 4.2).
  *
- * [result] is sample/fixture data until Phase 5 (Integration) wires in
- * real calculation engine output — see SampleTdmResults.kt.
+ * Pass [isSampleData] = true only when [result] is fixture data (see
+ * SampleTdmResults.kt) rather than a real calculation — e.g. when this
+ * screen is reached without going through the input form.
  */
 @Composable
-fun ResultsScreen(result: TdmResult, onOpenExplanation: () -> Unit) {
+fun ResultsScreen(result: TdmResult, isSampleData: Boolean = false, onOpenExplanation: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,11 +39,13 @@ fun ResultsScreen(result: TdmResult, onOpenExplanation: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(text = "Results", style = MaterialTheme.typography.headlineSmall)
-        Text(
-            text = "Sample data — pending calculation engine integration (Phase 5).",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.error
-        )
+        if (isSampleData) {
+            Text(
+                text = "Sample data — no calculation has been run yet.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         SectionCard(title = "Input Values") {
             InputValuesSummary(result.input)
@@ -105,6 +108,9 @@ private fun InputValuesSummary(input: WorkflowInput) {
 
 @Composable
 private fun ParametersSummary(parameters: PharmacokineticParameters) {
+    if (parameters.creatinineClearanceMlPerMin != null) {
+        LabelledValue("Creatinine clearance", parameters.creatinineClearanceMlPerMin.orDash("mL/min"))
+    }
     LabelledValue("Elimination rate constant (Ke)", parameters.eliminationRateConstantPerHour.orDash("/h"))
     LabelledValue("Elimination half-life", parameters.eliminationHalfLifeHours.orDash("h"))
     LabelledValue("Volume of distribution (Vd)", parameters.volumeOfDistributionL.orDash("L"))
