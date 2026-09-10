@@ -19,11 +19,12 @@ import com.aiu.tdminsight.domain.model.TdmResult
 /**
  * Step-by-step walkthrough of how a result was reached (Case Study §9:
  * Input Values → Intermediate Values → Pharmacokinetic Parameters →
- * Final Result), opened from the Results screen. [result] is sample
- * data until Phase 5 wires in real calculation engine output.
+ * Final Result), opened from the Results screen. Pass [isSampleData] =
+ * true only when [result] is fixture data rather than a real
+ * calculation.
  */
 @Composable
-fun ExplanationScreen(result: TdmResult) {
+fun ExplanationScreen(result: TdmResult, isSampleData: Boolean = false) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,11 +33,13 @@ fun ExplanationScreen(result: TdmResult) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(text = "Calculation Explanation", style = MaterialTheme.typography.headlineSmall)
-        Text(
-            text = "Sample data — pending calculation engine integration (Phase 5).",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.error
-        )
+        if (isSampleData) {
+            Text(
+                text = "Sample data — no calculation has been run yet.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         if (result.explanation.isEmpty()) {
             Text(
