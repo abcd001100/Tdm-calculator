@@ -11,7 +11,8 @@ data class PharmacokineticParameters(
     val eliminationRateConstantPerHour: Double? = null,
     val eliminationHalfLifeHours: Double? = null,
     val volumeOfDistributionL: Double? = null,
-    val clearanceLPerHour: Double? = null
+    val clearanceLPerHour: Double? = null,
+    val creatinineClearanceMlPerMin: Double? = null
 )
 
 /**
