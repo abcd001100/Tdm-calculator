@@ -20,7 +20,7 @@ class PatientFormScreenTest {
     fun tappingContinueWithBlankForm_showsValidationErrors() {
         composeTestRule.setContent {
             TdmInsightTheme {
-                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onCalculated = {})
+                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onContinue = {})
             }
         }
 
@@ -34,7 +34,7 @@ class PatientFormScreenTest {
     fun onlyPreDoseFields_areShown_forPreWorkflow() {
         composeTestRule.setContent {
             TdmInsightTheme {
-                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onCalculated = {})
+                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onContinue = {})
             }
         }
 
@@ -46,7 +46,7 @@ class PatientFormScreenTest {
     fun bothConcentrationFields_areShown_forPrePostWorkflow() {
         composeTestRule.setContent {
             TdmInsightTheme {
-                PatientFormScreen(workflow = VancomycinWorkflow.PRE_POST, onCalculated = {})
+                PatientFormScreen(workflow = VancomycinWorkflow.PRE_POST, onContinue = {})
             }
         }
 
@@ -55,12 +55,12 @@ class PatientFormScreenTest {
     }
 
     @Test
-    fun validPreWorkflowInput_callsOnCalculated() {
-        var calculated = false
+    fun validPreWorkflowInput_callsOnContinue() {
+        var continued = false
 
         composeTestRule.setContent {
             TdmInsightTheme {
-                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onCalculated = { calculated = true })
+                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onContinue = { continued = true })
             }
         }
 
@@ -76,16 +76,16 @@ class PatientFormScreenTest {
 
         composeTestRule.onNodeWithText("Continue").performClick()
 
-        assertTrue(calculated)
+        assertTrue(continued)
     }
 
     @Test
-    fun invalidTiming_doesNotCallOnCalculated() {
-        var calculated = false
+    fun invalidTiming_doesNotCallOnContinue() {
+        var continued = false
 
         composeTestRule.setContent {
             TdmInsightTheme {
-                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onCalculated = { calculated = true })
+                PatientFormScreen(workflow = VancomycinWorkflow.PRE, onContinue = { continued = true })
             }
         }
 
@@ -102,6 +102,6 @@ class PatientFormScreenTest {
 
         composeTestRule.onNodeWithText("Continue").performClick()
 
-        assertFalse(calculated)
+        assertFalse(continued)
     }
 }
