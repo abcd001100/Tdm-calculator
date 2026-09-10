@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.aiu.tdminsight.domain.model.VancomycinWorkflow
+import com.aiu.tdminsight.ui.input.PatientFormScreen
 import com.aiu.tdminsight.ui.input.WorkflowSelectionScreen
 
 /**
@@ -40,12 +41,18 @@ fun TdmNavGraph(navController: NavHostController = rememberNavController()) {
         ) { backStackEntry ->
             val workflowName = backStackEntry.arguments?.getString(Routes.INPUT_FORM_ARG_WORKFLOW)
             val workflow = workflowName?.let { runCatching { VancomycinWorkflow.valueOf(it) }.getOrNull() }
-            PlaceholderScreen(
-                title = "Patient & Workflow Input",
-                description = "The dynamic input form for ${workflow?.name ?: "the selected workflow"} " +
-                    "lands here in Phase 3.2/3.3.",
-                onNext = { navController.navigate(Routes.RESULTS) }
-            )
+            if (workflow == null) {
+                PlaceholderScreen(
+                    title = "Patient & Workflow Input",
+                    description = "No workflow was selected — go back and choose one.",
+                    onNext = null
+                )
+            } else {
+                PatientFormScreen(
+                    workflow = workflow,
+                    onContinue = { navController.navigate(Routes.RESULTS) }
+                )
+            }
         }
         composable(Routes.RESULTS) {
             PlaceholderScreen(
