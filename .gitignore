@@ -1,0 +1,28 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+*.hprof
+
+# Android Studio / IntelliJ
+.idea/*
+!.idea/copyright/
+*.jks
+*.keystore
+
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Log/OS files
+*.log
+Thumbs.db
