@@ -21,7 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.aiu.tdminsight.domain.calculation.CalculationResult
+import com.aiu.tdminsight.domain.calculation.VancomycinCalculationEngine
 import com.aiu.tdminsight.domain.model.BiologicalSex
+import com.aiu.tdminsight.domain.model.TdmResult
 import com.aiu.tdminsight.domain.model.VancomycinWorkflow
 import com.aiu.tdminsight.domain.validation.ValidationResult
 import com.aiu.tdminsight.domain.validation.validatePostWorkflowInput
@@ -34,14 +37,20 @@ import com.aiu.tdminsight.domain.validation.validatePrePostWorkflowInput
  * for whichever [workflow] was chosen in Phase 3.1 — only the fields
  * that workflow actually needs are shown, per Case Study §3 ("do not
  * display every possible input field on one screen").
+ *
+ * On a valid submission, this also runs the calculation engine
+ * (UI → Input State → Validation → Engine, per the architecture in
+ * CLAUDE.md) and hands the resulting [TdmResult] to [onCalculated] —
+ * the engine call itself lives in TdmCalculationEngine.kt, not here.
  */
 @Composable
 fun PatientFormScreen(
     workflow: VancomycinWorkflow,
     state: PatientFormState = rememberPatientFormState(),
-    onContinue: () -> Unit
+    onCalculated: (TdmResult) -> Unit
 ) {
     var errors by remember { mutableStateOf<List<String>>(emptyList()) }
+    val engine = remember { VancomycinCalculationEngine() }
 
     Column(
         modifier = Modifier
@@ -208,11 +217,15 @@ fun PatientFormScreen(
 
             when (result) {
                 is ValidationResult.Valid -> {
-                    errors = emptyList()
-                    // The validated WorkflowInput itself isn't carried forward yet —
-                    // there's no shared state/ViewModel wiring screens together until
-                    // Phase 5 (Integration) connects this to the calculation engine.
-                    onContinue()
+                    when (val calculation = engine.calculate(result.value)) {
+                        is CalculationResult.Success -> {
+                            errors = emptyList()
+                            onCalculated(calculation.result)
+                        }
+                        is CalculationResult.Failure -> {
+                            errors = listOf(calculation.message)
+                        }
+                    }
                 }
                 is ValidationResult.Invalid -> {
                     errors = result.errors.map { it.message }
