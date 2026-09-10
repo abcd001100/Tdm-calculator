@@ -299,19 +299,20 @@ dependency.
 
 # GITHUB WORKFLOW
 
-Use feature branches.
+Each member works on one persistent personal branch for the whole
+project. Do not create a new branch per feature or task.
 
-Example:
+Branches:
 
-feature/member1-navigation
-feature/member2-tvm-calculation
-feature/member3-results
+member1-abdulaziz
+member2-amir
+member3-bonson
 
-Preferred workflow:
+Workflow:
 
-feature branch
+personal branch
 ↓
-implementation
+implementation (one feature at a time, one commit per feature)
 ↓
 test
 ↓
@@ -319,15 +320,24 @@ commit
 ↓
 push
 ↓
-Pull Request
+Pull Request (opened when a meaningful chunk of the member's work is
+ready, not after every single commit)
 ↓
 review
 ↓
-merge
+merge into main
 
 Keep main stable.
 
-Use develop if the team decides to maintain an integration branch.
+Never batch multiple unrelated features into one commit, even though
+commits land on a shared personal branch rather than a fresh branch
+per feature. Each commit should still represent one logical change,
+per the SMALL FUNCTIONAL COMMITS rule above.
+
+Shared or integration tasks that don't belong to one member (e.g.
+final regression testing, submission packaging) are done on whichever
+member's branch is doing that work at the time, then merged to main
+like anything else.
 
 ---
 
