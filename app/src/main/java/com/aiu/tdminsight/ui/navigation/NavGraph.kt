@@ -8,6 +8,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -16,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.aiu.tdminsight.domain.model.TdmResult
 import com.aiu.tdminsight.domain.model.VancomycinWorkflow
 import com.aiu.tdminsight.ui.input.PatientFormScreen
 import com.aiu.tdminsight.ui.input.WorkflowSelectionScreen
@@ -24,14 +29,18 @@ import com.aiu.tdminsight.ui.results.ResultsScreen
 import com.aiu.tdminsight.ui.results.sampleTdmResult
 
 /**
- * Top-level navigation graph for the app. Every destination here is a
- * placeholder ([PlaceholderScreen]) — real screens replace them one at a
- * time in later roadmap phases (see docs/Implementation_Roadmap.md).
- * Routes are additive: later phases should add to this graph rather than
- * rewrite it, since Phase 3 and Phase 4 both touch this file.
+ * Top-level navigation graph for the app. Routes are additive: later
+ * phases should add to this graph rather than rewrite it.
+ *
+ * [latestResult] is a small piece of nav-graph-scoped state carrying
+ * the most recently calculated [TdmResult] from the input form to the
+ * Results/Explanation screens — a full ViewModel felt like more
+ * architecture than this hand-off needs right now.
  */
 @Composable
 fun TdmNavGraph(navController: NavHostController = rememberNavController()) {
+    var latestResult by remember { mutableStateOf<TdmResult?>(null) }
+
     NavHost(navController = navController, startDestination = Routes.WORKFLOW_SELECTION) {
         composable(Routes.WORKFLOW_SELECTION) {
             WorkflowSelectionScreen(
@@ -53,22 +62,39 @@ fun TdmNavGraph(navController: NavHostController = rememberNavController()) {
             } else {
                 PatientFormScreen(
                     workflow = workflow,
-                    onContinue = { navController.navigate(Routes.RESULTS) }
+                    onCalculated = { result ->
+                        latestResult = result
+                        navController.navigate(Routes.RESULTS)
+                    }
                 )
             }
         }
         composable(Routes.RESULTS) {
-            // TODO(Phase 5): replace this fixed sample with the actual
-            // validated WorkflowInput + real engine output, once the
-            // calculation engine is unblocked and screens are wired
-            // together with shared state.
-            ResultsScreen(
-                result = sampleTdmResult(VancomycinWorkflow.PRE_POST),
-                onOpenExplanation = { navController.navigate(Routes.EXPLANATION) }
-            )
+            val result = latestResult
+            if (result == null) {
+                // Reached without going through the form (e.g. process
+                // death) — show fixture data rather than crash, clearly
+                // marked as sample data.
+                ResultsScreen(
+                    result = sampleTdmResult(VancomycinWorkflow.PRE_POST),
+                    isSampleData = true,
+                    onOpenExplanation = { navController.navigate(Routes.EXPLANATION) }
+                )
+            } else {
+                ResultsScreen(
+                    result = result,
+                    isSampleData = false,
+                    onOpenExplanation = { navController.navigate(Routes.EXPLANATION) }
+                )
+            }
         }
         composable(Routes.EXPLANATION) {
-            ExplanationScreen(result = sampleTdmResult(VancomycinWorkflow.PRE_POST))
+            val result = latestResult
+            if (result == null) {
+                ExplanationScreen(result = sampleTdmResult(VancomycinWorkflow.PRE_POST), isSampleData = true)
+            } else {
+                ExplanationScreen(result = result, isSampleData = false)
+            }
         }
     }
 }
