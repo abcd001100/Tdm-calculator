@@ -19,6 +19,9 @@ import androidx.navigation.navArgument
 import com.aiu.tdminsight.domain.model.VancomycinWorkflow
 import com.aiu.tdminsight.ui.input.PatientFormScreen
 import com.aiu.tdminsight.ui.input.WorkflowSelectionScreen
+import com.aiu.tdminsight.ui.results.ExplanationScreen
+import com.aiu.tdminsight.ui.results.ResultsScreen
+import com.aiu.tdminsight.ui.results.sampleTdmResult
 
 /**
  * Top-level navigation graph for the app. Every destination here is a
@@ -55,18 +58,17 @@ fun TdmNavGraph(navController: NavHostController = rememberNavController()) {
             }
         }
         composable(Routes.RESULTS) {
-            PlaceholderScreen(
-                title = "Results",
-                description = "Intermediate and final calculation results land here in Phase 4.1.",
-                onNext = { navController.navigate(Routes.EXPLANATION) }
+            // TODO(Phase 5): replace this fixed sample with the actual
+            // validated WorkflowInput + real engine output, once the
+            // calculation engine is unblocked and screens are wired
+            // together with shared state.
+            ResultsScreen(
+                result = sampleTdmResult(VancomycinWorkflow.PRE_POST),
+                onOpenExplanation = { navController.navigate(Routes.EXPLANATION) }
             )
         }
         composable(Routes.EXPLANATION) {
-            PlaceholderScreen(
-                title = "Explanation",
-                description = "The step-by-step calculation explanation lands here in Phase 4.2.",
-                onNext = null
-            )
+            ExplanationScreen(result = sampleTdmResult(VancomycinWorkflow.PRE_POST))
         }
     }
 }
