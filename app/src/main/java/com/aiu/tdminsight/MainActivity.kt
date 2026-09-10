@@ -8,16 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.aiu.tdminsight.ui.navigation.TdmNavGraph
 import com.aiu.tdminsight.ui.theme.TdmInsightTheme
 
 /**
- * Application entry point. This is a themed shell only — navigation and
- * real screens land in later roadmap phases (see
- * docs/Implementation_Roadmap.md, Phase 1.2 onward).
+ * Application entry point. Screens themselves live in the navigation
+ * graph (see ui/navigation/NavGraph.kt) — this class only sets up the
+ * theme and the surrounding Scaffold.
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,23 +25,10 @@ class MainActivity : ComponentActivity() {
             TdmInsightTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Surface(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-                        AppPlaceholder()
+                        TdmNavGraph()
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun AppPlaceholder() {
-    Text(text = "TDM Insight")
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AppPlaceholderPreview() {
-    TdmInsightTheme {
-        AppPlaceholder()
     }
 }
