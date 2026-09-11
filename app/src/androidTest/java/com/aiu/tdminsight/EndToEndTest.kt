@@ -118,7 +118,8 @@ class EndToEndTest {
         // Pre+Post uses the patient-specific two-point method, not a population estimate.
         composeTestRule.onNodeWithText("1. Input values").assertExists()
         composeTestRule.onNodeWithText("2. Elimination rate constant (Ke) — patient-specific").assertExists()
-        composeTestRule.onNodeWithText("6. Final result").assertExists()
+        composeTestRule.onNodeWithText("4. Back-extrapolated true peak and trough").assertExists()
+        composeTestRule.onNodeWithText("7. Final result").assertExists()
     }
 
     @Test
