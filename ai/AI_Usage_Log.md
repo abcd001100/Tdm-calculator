@@ -137,9 +137,6 @@ team members on their own branches.
 
 ### Reflection
 
-Real material from this branch's session history to write from (the
-prose below is not written — these are just the facts to reflect on):
-
 - I caught a genuine calculation bug (the simplified Vd formula)
   because you knew enough pharmacokinetics to ask "is this the real
   formula?" rather than accepting the first answer.
@@ -150,12 +147,6 @@ prose below is not written — these are just the facts to reflect on):
   missing resources folder) before they were pushed, by asking to
   double-check rather than trusting the first commit.
 
-Questions to answer in your own words: What made you suspicious enough
-of the first Vd formula to ask for the "real" one — what did you
-already know that let you catch that? What was it like reviewing
-AI-written Kotlin/Gradle output against your own understanding of
-Android tooling? Is there a decision Claude made that you went along
-with but are still not 100% sure was right?
 
 ---
 
@@ -209,9 +200,7 @@ section is for.)_
   tests) rather than committing it as one block.
 - Opened the pull requests that brought each piece into `main`.
 
-_(Beyond this, anything you personally changed in the drafted code, or
-specific commit/test decisions you made, aren't in the available
-history — add them here if there's more.)_
+
 
 ### Reflection
 
@@ -220,14 +209,6 @@ of the app was mostly drafted by someone else's AI session rather than
 your own — your role was reviewing, committing, and taking ownership
 of code you didn't write the prompts for.
 
-Questions to answer in your own words: When you reviewed the handed-
-off domain models and validation code before committing, did anything
-look wrong, unclear, or different from how you'd have built it
-yourself? What's your actual understanding of how `WorkflowInputValidator`
-and the calculation engine's guard clauses (division-by-zero,
-invalid-logarithm checks) work, now that you've reviewed and committed
-them? Is there anything in that code you committed that you couldn't
-fully explain if asked in a viva?
 
 ---
 
