@@ -44,10 +44,10 @@ class VancomycinCalculationEngineTest {
         val result = engine.calculate(input) as CalculationResult.Success
         val params = result.result.parameters
 
-        assertEquals(0.10986, params.eliminationRateConstantPerHour!!, 0.0001)
-        assertEquals(6.3093, params.eliminationHalfLifeHours!!, 0.001)
-        assertEquals(37.8765, params.volumeOfDistributionL!!, 0.001)
-        assertEquals(4.1612, params.clearanceLPerHour!!, 0.001)
+        assertEquals(0.11564, params.eliminationRateConstantPerHour!!, 0.0001)
+        assertEquals(5.9938, params.eliminationHalfLifeHours!!, 0.001)
+        assertEquals(41.2547, params.volumeOfDistributionL!!, 0.001)
+        assertEquals(4.7708, params.clearanceLPerHour!!, 0.001)
     }
 
     @Test

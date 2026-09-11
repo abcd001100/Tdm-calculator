@@ -9,6 +9,33 @@ peer-reviewed pharmacokinetics literature they're built on — every
 formula below traces to a named, dated, citable publication, not a
 guess.
 
+## Verified directly against myTDM Calculator's own worksheet
+
+myTDM Calculator's site doesn't publish a methodology page, but running
+the tool itself produces a step-by-step worksheet showing its actual
+formulas. That worksheet was captured and checked line-by-line against
+this project's implementation. Two real differences were found and
+corrected to match the source exactly:
+
+1. **Ke's time denominator** originally omitted the pre-dose sample's
+   own timing offset. myTDM's worksheet formula is
+   `Δt = τ − T_infusion − t_post − t_pre` (subtracting *both*
+   sample-timing offsets), not just the post-dose one — corrected.
+2. **Vd** originally used the full infusion-rate steady-state integral.
+   myTDM's worksheet uses the simpler `Vd = Dose / (true Cmax − true
+   Cmin)`, applied to the back-extrapolated (not raw measured) peak and
+   trough — corrected to match.
+
+**One remaining honest discrepancy, not yet resolved:** myTDM's CrCl
+step uses serum creatinine in **µmol/L** with gender multipliers 1.23
+(male) / ~1.04 (female), which is the Cockcroft-Gault equation in SI
+units — mathematically equivalent to the mg/dL form used here, but this
+app's input field is currently labelled and validated in **mg/dL**.
+Functionally correct either way as long as the user enters the right
+unit for the label shown, but the input unit doesn't match the
+named source's own tool. Worth aligning if there's time, otherwise
+flag it for whoever reviews this next.
+
 ## What the two named sources actually contain
 
 **PhIS TDM Calculator Manual (13th Edition)** — the actual manual was
@@ -115,7 +142,7 @@ two points sit on one continuous elimination curve running **from the
 post-dose sample forward to the next occurrence of that trough**:
 
 ```
-Δt = τ − T_infusion − t_post
+Δt = τ − T_infusion − t_post − t_pre
 Ke = ln(Cpost / Cpre) / Δt
 ```
 
@@ -130,14 +157,14 @@ Cmax(true) = Cpost(measured) × e^(Ke × t_post)
 Cmin(true) = Cpre(measured) × e^(−Ke × t_pre)
 ```
 
-Volume of distribution then comes from the standard one-compartment
-constant-rate infusion model at steady state, solved for Vd — the
-infusion-corrected form (this is what makes it "real": it accounts for
-elimination that happens *during* the infusion itself, which a naive
-`Vd = Dose / (Cmax − Cmin)` shortcut does not):
+Volume of distribution then uses the back-extrapolated true values
+(not the raw measured ones) — this is what makes it a real correction
+over the naive `Vd = Dose / (Cmax(measured) − Cmin(measured))`
+shortcut, and it's the exact form myTDM Calculator's own worksheet
+uses:
 
 ```
-Vd = [Dose / T_infusion] × (1 − e^(−Ke × T_infusion)) / [Ke × (Cmax(true) − Cmin(true) × e^(−Ke × T_infusion))]
+Vd = Dose / (Cmax(true) − Cmin(true))
 ```
 
 ## Validation guards implemented (Case Study §8: division by zero, invalid logarithms)
@@ -157,7 +184,7 @@ Vd = [Dose / T_infusion] × (1 − e^(−Ke × T_infusion)) / [Ke × (Cmax(true)
 ## Sources
 
 - [PhIS TDM Calculator Manual, 13th Edition (PDF)](https://phisportal.moh.gov.my/sites/default/files/phis_attachments_39556/PB_U.%20MANUAL_TDM%20CALCULATOR-13th%20E.pdf)
-- [myTDM Calculator](https://www.mytdmcalculator.com/) — tool only, no published methodology
+- [myTDM Calculator](https://www.mytdmcalculator.com/) — no published methodology page, but its own generated worksheet (captured 2026-09-11) was checked line-by-line against this implementation and used to correct the Ke time term and Vd formula above
 - Cockcroft, D. W., & Gault, M. H. (1976). Prediction of creatinine clearance from serum creatinine. *Nephron, 16*(1), 31–41. https://doi.org/10.1159/000180580
 - Matzke, G. R., McGory, R. W., Halstenson, C. E., & Keane, W. E. (1984). Pharmacokinetics of vancomycin in patients with various degrees of renal function. *Antimicrobial Agents and Chemotherapy, 25*(4), 433–437.
 - Sawchuk, R. J., & Zaske, D. E. (1976). Pharmacokinetics of dosing regimens which utilize multiple intravenous infusions: Gentamicin in burn patients. *Journal of Pharmacokinetics and Biopharmaceutics, 4*(2), 183–195.
