@@ -137,10 +137,17 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
         }
 
         val tau = input.dose.dosingIntervalHours
-        val remainingTime = tau - input.postDoseSampleTimeAfterInfusionHours
+        val infusionHours = input.dose.infusionDurationMinutes / 60.0
+        // The sample is drawn this many hours after the infusion ends, so
+        // its absolute time since dose start is infusionHours + sample
+        // time — both must be subtracted to get the time actually left
+        // before the next dose (previously only the sample time was
+        // subtracted, which silently ignored the infusion duration).
+        val remainingTime = tau - infusionHours - input.postDoseSampleTimeAfterInfusionHours
         if (remainingTime <= 0.0) {
             return CalculationResult.Failure(
-                "Post-dose sample time must be before the next dose is due."
+                "The post-dose sample time plus the infusion duration must leave time before " +
+                    "the next dose — check the sampling time, infusion duration, and dosing interval."
             )
         }
 

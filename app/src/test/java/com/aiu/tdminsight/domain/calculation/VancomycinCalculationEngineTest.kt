@@ -104,13 +104,38 @@ class VancomycinCalculationEngineTest {
     fun `post-only uses population Ke and projects Cmin from measured peak`() {
         val input = WorkflowInput.Post(
             patient = patient,
-            dose = dose,
+            dose = dose, // 1h infusion, 12h interval
             postDoseConcentrationMgL = 30.0,
             postDoseSampleTimeAfterInfusionHours = 1.0
         )
 
         val result = engine.calculate(input) as CalculationResult.Success
 
-        assertEquals(12.299, result.result.explanation.last().value!!, 0.01)
+        // Remaining decay time before the next dose = interval - infusion -
+        // sample time = 12 - 1 - 1 = 10h (independently recomputed, not
+        // copied from the implementation — this is the regression test for
+        // a bug where the infusion duration was previously omitted here,
+        // giving 11h and an incorrect Cmin of ~11.48).
+        assertEquals(13.3378, result.result.explanation.last().value!!, 0.001)
+    }
+
+    @Test
+    fun `post-only correctly subtracts infusion duration from remaining decay time`() {
+        // Same inputs but with the infusion duration doubled — if the bug
+        // (infusion duration omitted from remaining time) were reintroduced,
+        // this value would not change when infusion duration does, since
+        // the buggy formula never used it.
+        val longerInfusionDose = dose.copy(infusionDurationMinutes = 120.0)
+        val input = WorkflowInput.Post(
+            patient = patient,
+            dose = longerInfusionDose, // 2h infusion, 12h interval
+            postDoseConcentrationMgL = 30.0,
+            postDoseSampleTimeAfterInfusionHours = 1.0
+        )
+
+        val result = engine.calculate(input) as CalculationResult.Success
+
+        // Remaining = 12 - 2 - 1 = 9h
+        assertEquals(14.4640, result.result.explanation.last().value!!, 0.001)
     }
 }

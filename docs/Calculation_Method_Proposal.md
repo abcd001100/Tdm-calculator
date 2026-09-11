@@ -116,9 +116,14 @@ Cmax(estimated) = Cmin(measured) × e^(Ke × (τ − T_infusion))
 ```
 
 **Post-only** projects the measured peak backward to estimate the
-trough:
+trough. The sample is drawn `t_sample` hours *after the infusion ends*,
+so its absolute time since dose start is `T_infusion + t_sample` — both
+must be subtracted from the interval to get the time actually
+remaining before the next dose (an earlier version of this formula and
+its implementation omitted `T_infusion` here, underestimating Cmin by
+several percent; fixed and covered by a regression test):
 ```
-Cmin(estimated) = Cmax(measured) × e^(−Ke × (τ − t_sample))
+Cmin(estimated) = Cmax(measured) × e^(−Ke × (τ − T_infusion − t_sample))
 ```
 
 ### Pre + Post — patient-specific, infusion-corrected two-point method
