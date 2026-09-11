@@ -3,7 +3,12 @@
 Prepared for: CDE2313 Mobile Application Development, Group Project
 (Assessment 2), Albukhary International University.
 
-> **Draft — review before submission.** This file was drafted by
+Covers: Bonson Adem Alo (AIU24102383) / `member3-bonson` branch. Each
+team member should keep their own log covering their own use of AI on
+their own branch; this file currently only documents this member's
+session(s).
+
+> **Draft** This file was drafted by
 > Claude Code to accurately record what happened during AI-assisted
 > sessions, one section per team member. The factual sections (tools,
 > prompts, suggestions adopted/rejected, mechanical modifications) are
