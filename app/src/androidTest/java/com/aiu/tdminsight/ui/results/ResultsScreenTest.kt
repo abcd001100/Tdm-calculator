@@ -68,7 +68,7 @@ class ResultsScreenTest {
         composeTestRule.onNodeWithText("70.0 kg").assertExists()
         composeTestRule.onNodeWithText("Pharmacokinetic Parameters").assertExists()
         composeTestRule.onNodeWithText("Elimination rate constant (Ke)").assertExists()
-        composeTestRule.onNodeWithText("0.15 /h").assertExists()
+        composeTestRule.onNodeWithText("0.1500 /h").assertExists()
     }
 
     @Test

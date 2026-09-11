@@ -68,7 +68,7 @@ private fun ExplanationStepCard(stepNumber: Int, step: ExplanationStep) {
             Text(text = step.detail, style = MaterialTheme.typography.bodyMedium)
             if (step.value != null) {
                 Text(
-                    text = "${step.value} ${step.unit.orEmpty()}".trim(),
+                    text = "${step.value.formatClinical()} ${step.unit.orEmpty()}".trim(),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
