@@ -1,7 +1,9 @@
 package com.aiu.tdminsight.ui.results
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -10,9 +12,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.aiu.tdminsight.domain.model.PharmacokineticParameters
 import com.aiu.tdminsight.domain.model.TdmResult
@@ -55,8 +59,20 @@ fun ResultsScreen(result: TdmResult, isSampleData: Boolean = false, onOpenExplan
             ParametersSummary(result.parameters)
         }
 
-        Button(onClick = onOpenExplanation) {
-            Text("View Explanation")
+        val context = LocalContext.current
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(onClick = onOpenExplanation) {
+                Text("View Explanation")
+            }
+            OutlinedButton(onClick = {
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, formatTdmResultSummary(result, isSampleData))
+                }
+                context.startActivity(Intent.createChooser(shareIntent, "Share TDM result"))
+            }) {
+                Text("Share")
+            }
         }
     }
 }
