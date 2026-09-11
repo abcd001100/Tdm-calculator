@@ -317,8 +317,6 @@ fully explain if asked in a viva?
 
 ### Reflection
 
-Real material from this session to write from:
-
 - Claude made a real mistake — assuming a callback had been renamed
   without checking — that broke the build. It was caught because a
   real `./gradlew` build was run, not because the mistake was obvious
@@ -328,7 +326,7 @@ Real material from this session to write from:
   integration weren't implemented, when teammates had already merged
   both into `main`. The actual branch history had to be checked to
   catch this.
-- You had to correct Claude's behavior directly at least twice: once
+- I had to correct Claude's behavior directly at least twice: once
   on committing without asking, and once on treating "do what's best"
   as a one-time answer instead of ongoing delegation.
 
