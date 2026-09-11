@@ -3,10 +3,16 @@
 Native Android Therapeutic Drug Monitoring (TDM) Calculator — Vancomycin
 Pre, Post, and Pre + Post workflows.
 
-> Status: repository scaffolding only. No application code has been
-> implemented yet. This README is a skeleton; each section will be
-> filled in as the corresponding implementation phase completes (see
-> `docs/Implementation_Roadmap.md`).
+> Status: all mandatory workflows (Phases 0–5 of
+> `docs/Implementation_Roadmap.md`) are implemented — dynamic input
+> forms, validation, the Vancomycin calculation engine, and the
+> results/explanation UI. The calculation engine's formulas are
+> implemented from cited standard pharmacokinetics references but are
+> **not yet lecturer-confirmed** — see
+> `docs/Calculation_Method_Proposal.md`. Treat every calculated number
+> as provisional until that confirmation happens. Optional enhancements
+> (Phase 6) and final submission packaging (Phase 7 — this README, the
+> AI Usage Log, screenshots, and the release APK) are in progress.
 
 ## Course Information
 
@@ -25,16 +31,63 @@ Pre, Post, and Pre + Post workflows.
 
 ## Case Study
 
-**Problem overview:** TODO — summarize the TDM Insight case study problem
-once `docs/Case_Study_Analysis.md` is complete.
+**Problem overview:** Vancomycin dosing needs to be adjusted per patient
+using Therapeutic Drug Monitoring (TDM) — measured blood concentrations
+are used to work out patient-specific pharmacokinetic parameters (e.g.
+elimination rate, half-life, volume of distribution, clearance) so that
+future dosing can be reasoned about safely. Manually walking through
+this calculation is repetitive and error-prone, and the process differs
+depending on which concentration samples are available: only a
+pre-dose (trough) sample, only a post-dose (peak) sample, or both. See
+`docs/Case_Study_Analysis.md` for the full breakdown of mandatory and
+optional requirements.
 
-**Summary of implemented solution:** TODO — filled in as workflows are
-implemented.
+**Summary of implemented solution:** TDM Insight is a native Android
+app that walks a user through all three Vancomycin TDM workflows —
+**Pre**, **Post**, and **Pre + Post** — with a dynamic input form that
+only shows the fields each workflow actually needs, thorough input and
+cross-field validation (including protection against division-by-zero
+and invalid-logarithm cases), a calculation engine kept structurally
+separate from the UI, and a Results screen that shows every input value
+and intermediate pharmacokinetic parameter — not just a final number —
+alongside a step-by-step Explanation screen. A calculated result can
+also be shared/exported as a plain-text summary. The app is an academic
+prototype: it is not a clinically validated prescribing, diagnostic, or
+treatment-decision system, and its calculation formulas are pending
+lecturer confirmation (see `docs/Calculation_Method_Proposal.md`).
 
 ## Key Implemented Features
 
-TODO — updated as each mandatory requirement is completed. See
-`docs/Implementation_Roadmap.md` for the planned sequence.
+- **Workflow selection** — choose Vancomycin Pre, Post, or Pre + Post;
+  the choice drives every screen that follows.
+- **Dynamic patient/dose input form** — only the fields relevant to the
+  selected workflow are shown, never a static superset.
+- **Input validation** — required fields, numeric/unit checks, range
+  checks, and cross-field/timing checks (e.g. a pre-dose sample can't
+  be older than one full dosing interval), with error messages phrased
+  for a general user rather than a raw exception.
+- **Calculation engine, separated from the UI** — patient/dose/sample
+  data flows through validation into a dedicated engine
+  (`domain/calculation/TdmCalculationEngine.kt`), which guards against
+  division-by-zero and invalid-logarithm inputs (e.g. a non-increasing
+  Pre+Post concentration pair) and returns a typed success/failure
+  result rather than crashing.
+- **Results screen** — shows the input values used and every
+  intermediate pharmacokinetic parameter (creatinine clearance,
+  elimination rate constant, half-life, volume of distribution,
+  clearance), not just a final number.
+- **Explanation screen** — a step-by-step walkthrough of how the result
+  was reached (Input Values → Intermediate Values → Pharmacokinetic
+  Parameters → Final Result), naming which method was used (a
+  population estimate for single-sample workflows, or a
+  patient-specific two-point calculation for Pre + Post).
+- **Export/share a result** — a calculated result (including the
+  academic-prototype disclaimer) can be shared as plain text via
+  Android's share sheet.
+- **Automated tests** — JUnit unit tests for validation and the result
+  formatter, and Compose UI tests covering dynamic form behaviour, the
+  results/explanation screens, and full end-to-end workflow runs
+  (`app/src/test`, `app/src/androidTest`).
 
 ## Technology Stack & Application Architecture
 
@@ -43,24 +96,59 @@ TODO — updated as each mandatory requirement is completed. See
 - UI: Jetpack Compose, Material 3
 - IDE: Android Studio
 
-Architecture details (layering, calculation engine separation, etc.)
-will be documented here once implemented.
+The app follows a one-directional layering, kept deliberately simple
+for a project this size (no ViewModel/Room where a smaller state holder
+or plain function already does the job):
+
+```
+UI (Compose screens)
+  ↓
+Input State (PatientFormState, etc.)
+  ↓
+Validation (domain/validation)
+  ↓
+TDM Calculation Engine (domain/calculation)
+  ↓
+Result Model (domain/model — TdmResult, PharmacokineticParameters)
+  ↓
+Results / Explanation UI (ui/results)
+```
+
+Calculation and validation logic lives in plain Kotlin classes under
+`domain/`, with no dependency on Compose or Android UI APIs, so it can
+be unit tested directly and stays reusable if the UI layer changes.
 
 ## Installation Guide
 
-TODO — once a release build exists.
+1. Install [Android Studio](https://developer.android.com/studio)
+   (current stable channel) with an Android SDK covering API level 35
+   (minSdk/targetSdk) and 37 (compileSdk).
+2. Clone this repository and open it in Android Studio — it will
+   prompt to sync Gradle automatically.
+3. Run the app on an emulator or a connected device (API 35+) via the
+   Run button, or see *How to Build* below for the command line.
 
 ## How to Build the Project
 
-TODO — once the Android Studio project is initialized.
+From the repository root:
+
+```bash
+./gradlew assembleDebug      # debug build
+./gradlew test               # JVM unit tests (app/src/test)
+./gradlew connectedAndroidTest   # instrumented UI tests, needs a device/emulator
+```
 
 ## APK Download
 
-TODO — link to `apk/app-release.apk` once a release build exists.
+[`apk/app-release.apk`](apk/app-release.apk) — a release-variant build,
+currently signed with the standard Android **debug** key (not a
+production release key) purely for installability on a test device;
+replace with a proper release keystore if this project ever needs a
+production-grade signature.
 
 ## Screenshots
 
-TODO — added to `screenshots/` as each screen is implemented.
+TODO — added to `screenshots/` as each screen is captured.
 
 ## GitHub Repository Structure
 
@@ -107,5 +195,20 @@ Tdm-calculator/
 
 ## References
 
-TODO — added in APA 7th Edition as clinical/technical sources are cited
-during implementation.
+Sources consulted for the calculation engine's provisional formulas —
+see `docs/Calculation_Method_Proposal.md` for the full write-up of what
+each was used for and what's still pending lecturer confirmation.
+
+- Pharmacy Information System (PhIS). (n.d.). *TDM calculator manual*
+  (13th ed.) [PDF]. Ministry of Health Malaysia.
+  https://phisportal.moh.gov.my/sites/default/files/phis_attachments_39556/PB_U.%20MANUAL_TDM%20CALCULATOR-13th%20E.pdf
+- myTDM Calculator. (n.d.). https://www.mytdmcalculator.com/
+
+The Cockcroft-Gault creatinine clearance equation, the Matzke
+population elimination-rate-constant equation, and the Sawchuk-Zaske
+two-point method are named, standard pharmacokinetics methods used in
+the engine (see `docs/Calculation_Method_Proposal.md`), but this
+project has not yet pinned each to a specific original journal
+citation — add proper APA entries for these (and confirm the exact
+population volume-of-distribution value, still flagged as unconfirmed)
+once the lecturer has reviewed the proposal document.
