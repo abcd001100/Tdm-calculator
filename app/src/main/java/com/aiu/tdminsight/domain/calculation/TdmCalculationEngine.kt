@@ -224,7 +224,8 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
         // (a dose is administered between the two draws, which adds
         // drug rather than eliminating it, so that gap can't be used
         // directly).
-        val deltaT = tau - infusionHours - input.postDoseSampleTimeAfterInfusionHours
+        val deltaT = tau - infusionHours - input.postDoseSampleTimeAfterInfusionHours -
+            input.preDoseSampleTimeBeforeDoseHours
         if (deltaT <= 0.0) {
             return CalculationResult.Failure(
                 "The post-dose sample must be drawn early enough in the interval to leave time " +
@@ -249,13 +250,8 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
         val trueCmax = input.postDoseConcentrationMgL * exp(ke * input.postDoseSampleTimeAfterInfusionHours)
         val trueCmin = input.preDoseConcentrationMgL * exp(-ke * input.preDoseSampleTimeBeforeDoseHours)
 
-        // Standard one-compartment constant-rate infusion model at
-        // steady state, solved for Vd — this is the infusion-corrected
-        // version (accounts for elimination happening during the
-        // infusion itself), not the simplified Dose/(Cmax-Cmin) form.
-        val infusionRate = input.dose.doseMg / infusionHours
-        val vd = (infusionRate * (1 - exp(-ke * infusionHours))) /
-            (ke * (trueCmax - trueCmin * exp(-ke * infusionHours)))
+
+        val vd = input.dose.doseMg / (trueCmax - trueCmin)
         val clearance = ke * vd
 
         val parameters = PharmacokineticParameters(
@@ -274,9 +270,9 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
             ),
             ExplanationStep(
                 "Elimination rate constant (Ke) — patient-specific",
-                "Two-point (Sawchuk-Zaske) method: Ke = ln(Cpost / Cpre) / (time from the " +
-                    "post-dose sample to when that same concentration recurs as next interval's " +
-                    "trough, ${"%.2f".format(deltaT)} h).",
+                "Two-point (Sawchuk-Zaske) method: Ke = ln(Cpost / Cpre) / Δt, where Δt is the " +
+                    "dosing interval minus the infusion duration minus both sample-timing " +
+                    "offsets (${"%.2f".format(deltaT)} h) — matches myTDM Calculator's own formula.",
                 ke, "/h"
             ),
             ExplanationStep(
@@ -291,9 +287,8 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
                     "the delay between each sample and its reference point.",
             ),
             ExplanationStep(
-                "Volume of distribution (Vd) — patient-specific, infusion-corrected",
-                "Standard one-compartment constant-rate infusion model at steady state, solved " +
-                    "for Vd using the back-extrapolated true peak and trough.",
+                "Volume of distribution (Vd) — patient-specific",
+                "Vd = Dose / (true Cmax - true Cmin), using the back-extrapolated values above.",
                 vd, "L"
             ),
             ExplanationStep(
