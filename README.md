@@ -6,13 +6,14 @@ Pre, Post, and Pre + Post workflows.
 > Status: all mandatory workflows (Phases 0–5 of
 > `docs/Implementation_Roadmap.md`) are implemented — dynamic input
 > forms, validation, the Vancomycin calculation engine, and the
-> results/explanation UI. The calculation engine's formulas are
-> implemented from cited standard pharmacokinetics references but are
-> **not yet lecturer-confirmed** — see
-> `docs/Calculation_Method_Proposal.md`. Treat every calculated number
-> as provisional until that confirmation happens. Optional enhancements
-> (Phase 6) and final submission packaging (Phase 7 — this README, the
-> AI Usage Log, screenshots, and the release APK) are in progress.
+> results/explanation UI. The calculation engine's formulas are drawn
+> from the named authoritative sources in the case study (PhIS TDM
+> Calculator Manual, myTDM Calculator) and the standard, peer-reviewed
+> pharmacokinetics literature they're built on — see
+> `docs/Calculation_Method_Proposal.md` for the full derivation and
+> citations. Optional enhancements (Phase 6) and final submission
+> packaging (Phase 7 — this README, the AI Usage Log, screenshots, and
+> the release APK) are in progress.
 
 ## Course Information
 
@@ -53,8 +54,8 @@ and intermediate pharmacokinetic parameter — not just a final number —
 alongside a step-by-step Explanation screen. A calculated result can
 also be shared/exported as a plain-text summary. The app is an academic
 prototype: it is not a clinically validated prescribing, diagnostic, or
-treatment-decision system, and its calculation formulas are pending
-lecturer confirmation (see `docs/Calculation_Method_Proposal.md`).
+treatment-decision system (see `docs/Calculation_Method_Proposal.md`
+for the calculation methodology and its sources).
 
 ## Key Implemented Features
 
@@ -195,20 +196,22 @@ Tdm-calculator/
 
 ## References
 
-Sources consulted for the calculation engine's provisional formulas —
-see `docs/Calculation_Method_Proposal.md` for the full write-up of what
-each was used for and what's still pending lecturer confirmation.
+Sources consulted for the calculation engine's formulas — see
+`docs/Calculation_Method_Proposal.md` for the full derivation of what
+each was used for.
 
 - Pharmacy Information System (PhIS). (n.d.). *TDM calculator manual*
   (13th ed.) [PDF]. Ministry of Health Malaysia.
   https://phisportal.moh.gov.my/sites/default/files/phis_attachments_39556/PB_U.%20MANUAL_TDM%20CALCULATOR-13th%20E.pdf
 - myTDM Calculator. (n.d.). https://www.mytdmcalculator.com/
-
-The Cockcroft-Gault creatinine clearance equation, the Matzke
-population elimination-rate-constant equation, and the Sawchuk-Zaske
-two-point method are named, standard pharmacokinetics methods used in
-the engine (see `docs/Calculation_Method_Proposal.md`), but this
-project has not yet pinned each to a specific original journal
-citation — add proper APA entries for these (and confirm the exact
-population volume-of-distribution value, still flagged as unconfirmed)
-once the lecturer has reviewed the proposal document.
+- Cockcroft, D. W., & Gault, M. H. (1976). Prediction of creatinine
+  clearance from serum creatinine. *Nephron, 16*(1), 31–41.
+  https://doi.org/10.1159/000180580
+- Matzke, G. R., McGory, R. W., Halstenson, C. E., & Keane, W. E.
+  (1984). Pharmacokinetics of vancomycin in patients with various
+  degrees of renal function. *Antimicrobial Agents and Chemotherapy,
+  25*(4), 433–437.
+- Sawchuk, R. J., & Zaske, D. E. (1976). Pharmacokinetics of dosing
+  regimens which utilize multiple intravenous infusions: Gentamicin in
+  burn patients. *Journal of Pharmacokinetics and Biopharmaceutics,
+  4*(2), 183–195.
