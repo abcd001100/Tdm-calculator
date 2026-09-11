@@ -176,10 +176,6 @@ Tdm-calculator/
 ├── apk/                     # Release-ready APK file
 │   └── app-release.apk
 │
-├── presentation/            # Presentation slides for final demonstration
-│   ├── Presentation.pptx
-│   └── Presentation.pdf
-│
 ├── ai/                      # Concise AI usage declaration
 │   └── AI_Usage_Log.pdf
 │
