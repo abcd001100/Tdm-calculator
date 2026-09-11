@@ -1,0 +1,9 @@
+# Ensure these binary formats are never subjected to line-ending
+# conversion (CRLF/LF), which would silently corrupt them — PDFs and
+# APKs rely on exact byte offsets internally, and Git's default binary
+# heuristic doesn't always catch them.
+*.pdf binary
+*.apk binary
+*.jpg binary
+*.jpeg binary
+*.png binary
