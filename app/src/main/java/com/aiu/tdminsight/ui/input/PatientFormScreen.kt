@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -61,178 +62,206 @@ fun PatientFormScreen(
     ) {
         Text(text = "Patient & Dose", style = MaterialTheme.typography.headlineSmall)
 
-        OutlinedTextField(
-            value = state.weightKg,
-            onValueChange = { state.weightKg = it },
-            label = { Text("Weight (kg)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = state.ageYears,
-            onValueChange = { state.ageYears = it },
-            label = { Text("Age (years)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Text(text = "Sex", style = MaterialTheme.typography.labelLarge)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SexOption(
-                label = "Male",
-                selected = state.sex == BiologicalSex.MALE,
-                onClick = { state.sex = BiologicalSex.MALE }
+        FormSection(title = "Patient") {
+            OutlinedTextField(
+                value = state.weightKg,
+                onValueChange = { state.weightKg = it },
+                label = { Text("Weight (kg)") },
+                modifier = Modifier.fillMaxWidth()
             )
-            SexOption(
-                label = "Female",
-                selected = state.sex == BiologicalSex.FEMALE,
-                onClick = { state.sex = BiologicalSex.FEMALE }
+            OutlinedTextField(
+                value = state.ageYears,
+                onValueChange = { state.ageYears = it },
+                label = { Text("Age (years)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Text(text = "Sex", style = MaterialTheme.typography.labelLarge)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SexOption(
+                    label = "Male",
+                    selected = state.sex == BiologicalSex.MALE,
+                    onClick = { state.sex = BiologicalSex.MALE }
+                )
+                SexOption(
+                    label = "Female",
+                    selected = state.sex == BiologicalSex.FEMALE,
+                    onClick = { state.sex = BiologicalSex.FEMALE }
+                )
+            }
+
+            OutlinedTextField(
+                value = state.serumCreatinineMgDl,
+                onValueChange = { state.serumCreatinineMgDl = it },
+                label = { Text("Serum creatinine (mg/dL)") },
+                modifier = Modifier.fillMaxWidth()
             )
         }
 
-        OutlinedTextField(
-            value = state.serumCreatinineMgDl,
-            onValueChange = { state.serumCreatinineMgDl = it },
-            label = { Text("Serum creatinine (mg/dL)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        HorizontalDivider()
-
-        OutlinedTextField(
-            value = state.doseMg,
-            onValueChange = { state.doseMg = it },
-            label = { Text("Dose (mg)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = state.infusionDurationMinutes,
-            onValueChange = { state.infusionDurationMinutes = it },
-            label = { Text("Infusion duration (minutes)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = state.dosingIntervalHours,
-            onValueChange = { state.dosingIntervalHours = it },
-            label = { Text("Dosing interval (hours)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        HorizontalDivider()
-
-        when (workflow) {
-            VancomycinWorkflow.PRE -> {
-                Text(text = "Pre-dose Sample", style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(
-                    value = state.preDoseConcentrationMgL,
-                    onValueChange = { state.preDoseConcentrationMgL = it },
-                    label = { Text("Pre-dose concentration (mg/L)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = state.preDoseSampleTimeBeforeDoseHours,
-                    onValueChange = { state.preDoseSampleTimeBeforeDoseHours = it },
-                    label = { Text("Sample time before dose (hours)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            VancomycinWorkflow.POST -> {
-                Text(text = "Post-dose Sample", style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(
-                    value = state.postDoseConcentrationMgL,
-                    onValueChange = { state.postDoseConcentrationMgL = it },
-                    label = { Text("Post-dose concentration (mg/L)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = state.postDoseSampleTimeAfterInfusionHours,
-                    onValueChange = { state.postDoseSampleTimeAfterInfusionHours = it },
-                    label = { Text("Sample time after infusion ends (hours)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            VancomycinWorkflow.PRE_POST -> {
-                Text(text = "Pre-dose Sample", style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(
-                    value = state.preDoseConcentrationMgL,
-                    onValueChange = { state.preDoseConcentrationMgL = it },
-                    label = { Text("Pre-dose concentration (mg/L)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = state.preDoseSampleTimeBeforeDoseHours,
-                    onValueChange = { state.preDoseSampleTimeBeforeDoseHours = it },
-                    label = { Text("Sample time before dose (hours)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(text = "Post-dose Sample", style = MaterialTheme.typography.titleMedium)
-                OutlinedTextField(
-                    value = state.postDoseConcentrationMgL,
-                    onValueChange = { state.postDoseConcentrationMgL = it },
-                    label = { Text("Post-dose concentration (mg/L)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = state.postDoseSampleTimeAfterInfusionHours,
-                    onValueChange = { state.postDoseSampleTimeAfterInfusionHours = it },
-                    label = { Text("Sample time after infusion ends (hours)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        FormSection(title = "Dose") {
+            OutlinedTextField(
+                value = state.doseMg,
+                onValueChange = { state.doseMg = it },
+                label = { Text("Dose (mg)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = state.infusionDurationMinutes,
+                onValueChange = { state.infusionDurationMinutes = it },
+                label = { Text("Infusion duration (minutes)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = state.dosingIntervalHours,
+                onValueChange = { state.dosingIntervalHours = it },
+                label = { Text("Dosing interval (hours)") },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
-        if (errors.isNotEmpty()) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                errors.forEach { message ->
-                    Text(
-                        text = message,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
+        FormSection(
+            title = when (workflow) {
+                VancomycinWorkflow.PRE -> "Pre-dose Sample"
+                VancomycinWorkflow.POST -> "Post-dose Sample"
+                VancomycinWorkflow.PRE_POST -> "Pre-dose & Post-dose Samples"
+            }
+        ) {
+            when (workflow) {
+                VancomycinWorkflow.PRE -> {
+                    OutlinedTextField(
+                        value = state.preDoseConcentrationMgL,
+                        onValueChange = { state.preDoseConcentrationMgL = it },
+                        label = { Text("Pre-dose concentration (mg/L)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = state.preDoseSampleTimeBeforeDoseHours,
+                        onValueChange = { state.preDoseSampleTimeBeforeDoseHours = it },
+                        label = { Text("Sample time before dose (hours)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                VancomycinWorkflow.POST -> {
+                    OutlinedTextField(
+                        value = state.postDoseConcentrationMgL,
+                        onValueChange = { state.postDoseConcentrationMgL = it },
+                        label = { Text("Post-dose concentration (mg/L)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = state.postDoseSampleTimeAfterInfusionHours,
+                        onValueChange = { state.postDoseSampleTimeAfterInfusionHours = it },
+                        label = { Text("Sample time after infusion ends (hours)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                VancomycinWorkflow.PRE_POST -> {
+                    OutlinedTextField(
+                        value = state.preDoseConcentrationMgL,
+                        onValueChange = { state.preDoseConcentrationMgL = it },
+                        label = { Text("Pre-dose concentration (mg/L)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = state.preDoseSampleTimeBeforeDoseHours,
+                        onValueChange = { state.preDoseSampleTimeBeforeDoseHours = it },
+                        label = { Text("Sample time before dose (hours)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = state.postDoseConcentrationMgL,
+                        onValueChange = { state.postDoseConcentrationMgL = it },
+                        label = { Text("Post-dose concentration (mg/L)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = state.postDoseSampleTimeAfterInfusionHours,
+                        onValueChange = { state.postDoseSampleTimeAfterInfusionHours = it },
+                        label = { Text("Sample time after infusion ends (hours)") },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
         }
 
-        Button(onClick = {
-            val result = when (workflow) {
-                VancomycinWorkflow.PRE -> validatePreWorkflowInput(
-                    patientRaw = state.toPatientInfoRawInput(),
-                    doseRaw = state.toDoseInfoRawInput(),
-                    preDoseConcentrationMgLRaw = state.preDoseConcentrationMgL,
-                    preDoseSampleTimeBeforeDoseHoursRaw = state.preDoseSampleTimeBeforeDoseHours
-                )
-                VancomycinWorkflow.POST -> validatePostWorkflowInput(
-                    patientRaw = state.toPatientInfoRawInput(),
-                    doseRaw = state.toDoseInfoRawInput(),
-                    postDoseConcentrationMgLRaw = state.postDoseConcentrationMgL,
-                    postDoseSampleTimeAfterInfusionHoursRaw = state.postDoseSampleTimeAfterInfusionHours
-                )
-                VancomycinWorkflow.PRE_POST -> validatePrePostWorkflowInput(
-                    patientRaw = state.toPatientInfoRawInput(),
-                    doseRaw = state.toDoseInfoRawInput(),
-                    preDoseConcentrationMgLRaw = state.preDoseConcentrationMgL,
-                    preDoseSampleTimeBeforeDoseHoursRaw = state.preDoseSampleTimeBeforeDoseHours,
-                    postDoseConcentrationMgLRaw = state.postDoseConcentrationMgL,
-                    postDoseSampleTimeAfterInfusionHoursRaw = state.postDoseSampleTimeAfterInfusionHours
-                )
-            }
-
-            when (result) {
-                is ValidationResult.Valid -> {
-                    when (val calculation = engine.calculate(result.value)) {
-                        is CalculationResult.Success -> {
-                            errors = emptyList()
-                            onCalculated(calculation.result)
-                        }
-                        is CalculationResult.Failure -> {
-                            errors = listOf(calculation.message)
-                        }
+        if (errors.isNotEmpty()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    errors.forEach { message ->
+                        Text(
+                            text = message,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
-                is ValidationResult.Invalid -> {
-                    errors = result.errors.map { it.message }
+            }
+        }
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                val result = when (workflow) {
+                    VancomycinWorkflow.PRE -> validatePreWorkflowInput(
+                        patientRaw = state.toPatientInfoRawInput(),
+                        doseRaw = state.toDoseInfoRawInput(),
+                        preDoseConcentrationMgLRaw = state.preDoseConcentrationMgL,
+                        preDoseSampleTimeBeforeDoseHoursRaw = state.preDoseSampleTimeBeforeDoseHours
+                    )
+                    VancomycinWorkflow.POST -> validatePostWorkflowInput(
+                        patientRaw = state.toPatientInfoRawInput(),
+                        doseRaw = state.toDoseInfoRawInput(),
+                        postDoseConcentrationMgLRaw = state.postDoseConcentrationMgL,
+                        postDoseSampleTimeAfterInfusionHoursRaw = state.postDoseSampleTimeAfterInfusionHours
+                    )
+                    VancomycinWorkflow.PRE_POST -> validatePrePostWorkflowInput(
+                        patientRaw = state.toPatientInfoRawInput(),
+                        doseRaw = state.toDoseInfoRawInput(),
+                        preDoseConcentrationMgLRaw = state.preDoseConcentrationMgL,
+                        preDoseSampleTimeBeforeDoseHoursRaw = state.preDoseSampleTimeBeforeDoseHours,
+                        postDoseConcentrationMgLRaw = state.postDoseConcentrationMgL,
+                        postDoseSampleTimeAfterInfusionHoursRaw = state.postDoseSampleTimeAfterInfusionHours
+                    )
+                }
+
+                when (result) {
+                    is ValidationResult.Valid -> {
+                        when (val calculation = engine.calculate(result.value)) {
+                            is CalculationResult.Success -> {
+                                errors = emptyList()
+                                onCalculated(calculation.result)
+                            }
+                            is CalculationResult.Failure -> {
+                                errors = listOf(calculation.message)
+                            }
+                        }
+                    }
+                    is ValidationResult.Invalid -> {
+                        errors = result.errors.map { it.message }
+                    }
                 }
             }
-        }) {
+        ) {
             Text("Continue")
+        }
+    }
+}
+
+@Composable
+private fun FormSection(title: String, content: @Composable () -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(text = title, style = MaterialTheme.typography.titleMedium)
+            content()
         }
     }
 }
