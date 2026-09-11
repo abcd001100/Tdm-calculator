@@ -8,7 +8,7 @@ team member should keep their own log covering their own use of AI on
 their own branch; this file currently only documents this member's
 session(s).
 
-> **Draft — review before submission.** This file was drafted by
+> **Draft** This file was drafted by
 > Claude Code to accurately record what happened during AI-assisted
 > sessions on this branch. The factual sections (tools, prompts,
 > suggestions adopted/rejected, mechanical modifications) are filled
