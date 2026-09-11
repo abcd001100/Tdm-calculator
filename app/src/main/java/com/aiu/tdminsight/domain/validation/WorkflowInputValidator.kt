@@ -268,6 +268,21 @@ fun validatePrePostWorkflowInput(
                 "must be before the next dose is due (dosing interval is ${dose.value.dosingIntervalHours}h)."
             )
         }
+        // Combined check: the calculation engine needs real time left over
+        // between the infusion ending and the next dose after BOTH sample
+        // offsets are accounted for, not just each one individually.
+        if (preSampleTime is ValidationResult.Valid && postSampleTime is ValidationResult.Valid) {
+            val infusionHours = dose.value.infusionDurationMinutes / 60.0
+            val remaining = dose.value.dosingIntervalHours - infusionHours -
+                postSampleTime.value - preSampleTime.value
+            if (remaining <= 0.0) {
+                errors += ValidationError.InvalidTiming(
+                    "Sample timing",
+                    "the pre-dose and post-dose sample times together leave no time before the " +
+                        "next dose — reduce one or both, or lengthen the dosing interval."
+                )
+            }
+        }
     }
 
     if (errors.isNotEmpty()) return ValidationResult.Invalid(errors)
