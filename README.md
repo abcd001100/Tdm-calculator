@@ -149,7 +149,16 @@ production-grade signature.
 
 ## Screenshots
 
-TODO — added to `screenshots/` as each screen is captured.
+| Workflow selection | Patient & dose form |
+|---|---|
+| ![Workflow selection screen](screenshots/photo_1_2026-09-11_20-47-39.jpg) | ![Patient and dose form](screenshots/photo_4_2026-09-11_20-47-39.jpg) |
+
+| Results | Explanation |
+|---|---|
+| ![Results screen with a real calculated output](screenshots/photo_9_2026-09-11_20-47-39.jpg) | ![Step-by-step calculation explanation](screenshots/photo_12_2026-09-11_20-47-39.jpg) |
+
+More captures, covering all three workflows and validation error states, are in
+[`screenshots/`](screenshots/).
 
 ## GitHub Repository Structure
 
