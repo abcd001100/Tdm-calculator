@@ -108,6 +108,21 @@ class WorkflowInputValidatorTest {
     }
 
     @Test
+    fun `pre-post rejects sample times that together leave no time before the next dose`() {
+        val result = validatePrePostWorkflowInput(
+            patientRaw = validPatient,
+            doseRaw = validDose, // 12h interval, 1h infusion
+            preDoseConcentrationMgLRaw = "10",
+            preDoseSampleTimeBeforeDoseHoursRaw = "6",
+            postDoseConcentrationMgLRaw = "30",
+            postDoseSampleTimeAfterInfusionHoursRaw = "5" // 6+1+5 = 12, leaves nothing
+        )
+        assertTrue(result is ValidationResult.Invalid)
+        val errors = (result as ValidationResult.Invalid).errors
+        assertTrue(errors.any { it is ValidationError.InvalidTiming })
+    }
+
+    @Test
     fun `review warning is raised when post concentration is not higher than pre concentration`() {
         val result = validatePrePostWorkflowInput(
             patientRaw = validPatient,

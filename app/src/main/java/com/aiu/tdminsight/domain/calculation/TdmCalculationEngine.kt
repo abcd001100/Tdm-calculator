@@ -19,10 +19,8 @@ interface TdmCalculationEngine {
  * Implements the three Vancomycin workflows using formulas sourced from
  * standard, cited pharmacokinetics references — see
  * docs/Calculation_Method_Proposal.md for the full write-up, sources,
- * and which parts are still flagged for lecturer confirmation (notably
- * the population Vd value). None of this is invented from scratch; it
- * is not yet lecturer-confirmed either. Treat results as provisional
- * until that confirmation happens.
+ * and one remaining known gap (the CrCl input unit doesn't match
+ * myTDM Calculator's own tool — documented there, not hidden).
  *
  * Method by workflow:
  *  - Pre-only / Post-only: only one concentration is measured, so Ke
@@ -30,9 +28,9 @@ interface TdmCalculationEngine {
  *    project the missing peak or trough from the one value we have.
  *  - Pre+Post: two concentrations spanning the same dosing interval
  *    give a patient-specific Ke via the two-point (Sawchuk-Zaske)
- *    method, and Vd from the simplified Dose/(Cmax-Cmin) relationship
- *    (not infusion-time-corrected — a known simplification, flagged in
- *    the explanation).
+ *    method, and Vd from Dose/(true Cmax - true Cmin) using
+ *    back-extrapolated concentrations — verified line-by-line against
+ *    myTDM Calculator's own generated worksheet.
  */
 class VancomycinCalculationEngine : TdmCalculationEngine {
 
