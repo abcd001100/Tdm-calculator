@@ -69,25 +69,25 @@ fun sampleTdmResult(workflow: VancomycinWorkflow): TdmResult {
         ),
         ExplanationStep(
             label = "Elimination rate constant (Ke)",
-            detail = "Sample value — the real formula is pending lecturer approval.",
+            detail = "Sample value for layout preview only — not computed by the calculation engine.",
             value = parameters.eliminationRateConstantPerHour,
             unit = "/h"
         ),
         ExplanationStep(
             label = "Elimination half-life",
-            detail = "Sample value — the real formula is pending lecturer approval.",
+            detail = "Sample value for layout preview only — not computed by the calculation engine.",
             value = parameters.eliminationHalfLifeHours,
             unit = "h"
         ),
         ExplanationStep(
             label = "Volume of distribution (Vd)",
-            detail = "Sample value — the real formula is pending lecturer approval.",
+            detail = "Sample value for layout preview only — not computed by the calculation engine.",
             value = parameters.volumeOfDistributionL,
             unit = "L"
         ),
         ExplanationStep(
             label = "Clearance",
-            detail = "Sample value — the real formula is pending lecturer approval.",
+            detail = "Sample value for layout preview only — not computed by the calculation engine.",
             value = parameters.clearanceLPerHour,
             unit = "L/h"
         )
