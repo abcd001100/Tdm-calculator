@@ -25,6 +25,12 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            // No production release keystore exists for this academic
+            // prototype — reuse the auto-generated debug key so the
+            // release build is a real, installable APK rather than an
+            // unsigned artifact nobody can run. Matches what the
+            // README already discloses about apk/app-release.apk.
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
