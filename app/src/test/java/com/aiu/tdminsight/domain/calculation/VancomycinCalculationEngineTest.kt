@@ -44,10 +44,10 @@ class VancomycinCalculationEngineTest {
         val result = engine.calculate(input) as CalculationResult.Success
         val params = result.result.parameters
 
-        assertEquals(0.4394, params.eliminationRateConstantPerHour!!, 0.0005)
-        assertEquals(1.5773, params.eliminationHalfLifeHours!!, 0.0005)
-        assertEquals(50.0, params.volumeOfDistributionL!!, 0.001)
-        assertEquals(21.972, params.clearanceLPerHour!!, 0.005)
+        assertEquals(0.10986, params.eliminationRateConstantPerHour!!, 0.0001)
+        assertEquals(6.3093, params.eliminationHalfLifeHours!!, 0.001)
+        assertEquals(37.8765, params.volumeOfDistributionL!!, 0.001)
+        assertEquals(4.1612, params.clearanceLPerHour!!, 0.001)
     }
 
     @Test
@@ -59,6 +59,22 @@ class VancomycinCalculationEngineTest {
             preDoseSampleTimeBeforeDoseHours = 0.5,
             postDoseConcentrationMgL = 15.0,
             postDoseSampleTimeAfterInfusionHours = 1.0
+        )
+
+        val result = engine.calculate(input)
+
+        assertTrue(result is CalculationResult.Failure)
+    }
+
+    @Test
+    fun `pre-post fails cleanly when post sample leaves no time before the next dose`() {
+        val input = WorkflowInput.PrePost(
+            patient = patient,
+            dose = dose, // 12h interval, 1h infusion
+            preDoseConcentrationMgL = 10.0,
+            preDoseSampleTimeBeforeDoseHours = 0.5,
+            postDoseConcentrationMgL = 30.0,
+            postDoseSampleTimeAfterInfusionHours = 11.5 // leaves no room before next dose
         )
 
         val result = engine.calculate(input)

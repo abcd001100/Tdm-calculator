@@ -206,18 +206,29 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
     }
 
     private fun calculatePrePost(input: WorkflowInput.PrePost): CalculationResult {
-        val infusionHours = input.dose.infusionDurationMinutes / 60.0
-        val deltaT = input.preDoseSampleTimeBeforeDoseHours + infusionHours +
-            input.postDoseSampleTimeAfterInfusionHours
-        if (deltaT <= 0.0) {
-            return CalculationResult.Failure(
-                "Time between the pre-dose and post-dose samples must be greater than zero."
-            )
-        }
         if (input.postDoseConcentrationMgL <= input.preDoseConcentrationMgL) {
             return CalculationResult.Failure(
                 "Post-dose concentration must be higher than the pre-dose concentration to " +
                     "calculate an elimination rate — check the sample order and timing."
+            )
+        }
+
+        val infusionHours = input.dose.infusionDurationMinutes / 60.0
+        val tau = input.dose.dosingIntervalHours
+
+        // The pre-dose sample is a steady-state trough — at steady state
+        // that same concentration recurs at the end of every interval.
+        // So the two measured points sit on ONE continuous elimination
+        // curve running from the post-dose sample forward to the next
+        // occurrence of the trough, not across the dose infusion itself
+        // (a dose is administered between the two draws, which adds
+        // drug rather than eliminating it, so that gap can't be used
+        // directly).
+        val deltaT = tau - infusionHours - input.postDoseSampleTimeAfterInfusionHours
+        if (deltaT <= 0.0) {
+            return CalculationResult.Failure(
+                "The post-dose sample must be drawn early enough in the interval to leave time " +
+                    "before the next dose — check the sampling time and dosing interval."
             )
         }
 
@@ -230,10 +241,21 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
         }
         val halfLife = halfLifeHours(ke)
 
-        // Simplified Vd = Dose / (Cmax - Cmin). This does not correct
-        // for elimination occurring during the infusion itself — a
-        // known simplification, flagged here rather than hidden.
-        val vd = input.dose.doseMg / (input.postDoseConcentrationMgL - input.preDoseConcentrationMgL)
+        // Back-extrapolate each measured concentration to the "true"
+        // peak (right at the end of infusion) and "true" trough (right
+        // at the moment the dose is given), correcting for the delay
+        // between when each sample was actually drawn and that
+        // reference point.
+        val trueCmax = input.postDoseConcentrationMgL * exp(ke * input.postDoseSampleTimeAfterInfusionHours)
+        val trueCmin = input.preDoseConcentrationMgL * exp(-ke * input.preDoseSampleTimeBeforeDoseHours)
+
+        // Standard one-compartment constant-rate infusion model at
+        // steady state, solved for Vd — this is the infusion-corrected
+        // version (accounts for elimination happening during the
+        // infusion itself), not the simplified Dose/(Cmax-Cmin) form.
+        val infusionRate = input.dose.doseMg / infusionHours
+        val vd = (infusionRate * (1 - exp(-ke * infusionHours))) /
+            (ke * (trueCmax - trueCmin * exp(-ke * infusionHours)))
         val clearance = ke * vd
 
         val parameters = PharmacokineticParameters(
@@ -246,12 +268,15 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
         val explanation = listOf(
             ExplanationStep(
                 "Input values",
-                "Pre-dose concentration ${input.preDoseConcentrationMgL} mg/L and post-dose " +
-                    "concentration ${input.postDoseConcentrationMgL} mg/L, ${"%.2f".format(deltaT)} h apart."
+                "Pre-dose (trough) concentration ${input.preDoseConcentrationMgL} mg/L and " +
+                    "post-dose (peak) concentration ${input.postDoseConcentrationMgL} mg/L for the " +
+                    "same dose."
             ),
             ExplanationStep(
                 "Elimination rate constant (Ke) — patient-specific",
-                "Two-point method: Ke = ln(Cpost / Cpre) / (time between samples).",
+                "Two-point (Sawchuk-Zaske) method: Ke = ln(Cpost / Cpre) / (time from the " +
+                    "post-dose sample to when that same concentration recurs as next interval's " +
+                    "trough, ${"%.2f".format(deltaT)} h).",
                 ke, "/h"
             ),
             ExplanationStep(
@@ -260,9 +285,15 @@ class VancomycinCalculationEngine : TdmCalculationEngine {
                 halfLife, "h"
             ),
             ExplanationStep(
-                "Volume of distribution (Vd) — patient-specific (simplified)",
-                "Vd = Dose / (Cpost - Cpre). Simplified: does not correct for elimination during " +
-                    "the infusion itself.",
+                "Back-extrapolated true peak and trough",
+                "True Cmax (at end of infusion) = ${"%.2f".format(trueCmax)} mg/L; true Cmin " +
+                    "(at the moment of dosing) = ${"%.2f".format(trueCmin)} mg/L — correcting for " +
+                    "the delay between each sample and its reference point.",
+            ),
+            ExplanationStep(
+                "Volume of distribution (Vd) — patient-specific, infusion-corrected",
+                "Standard one-compartment constant-rate infusion model at steady state, solved " +
+                    "for Vd using the back-extrapolated true peak and trough.",
                 vd, "L"
             ),
             ExplanationStep(
