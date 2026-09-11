@@ -65,7 +65,7 @@ class ExplanationScreenTest {
 
         composeTestRule.onNodeWithText("1. Input Values").assertExists()
         composeTestRule.onNodeWithText("2. Elimination rate constant (Ke)").assertExists()
-        composeTestRule.onNodeWithText("0.15 /h").assertExists()
+        composeTestRule.onNodeWithText("0.1500 /h").assertExists()
     }
 
     @Test

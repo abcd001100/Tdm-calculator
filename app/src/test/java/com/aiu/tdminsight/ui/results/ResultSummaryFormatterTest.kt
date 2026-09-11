@@ -54,8 +54,8 @@ class ResultSummaryFormatterTest {
         assertTrue(summary.contains("Vancomycin Pre Result"))
         assertTrue(summary.contains("Weight: 70.0 kg"))
         assertTrue(summary.contains("Pre-dose concentration: 8.0 mg/L"))
-        assertTrue(summary.contains("Creatinine clearance: 92.4 mL/min"))
-        assertTrue(summary.contains("Elimination rate constant (Ke): 0.08 /h"))
+        assertTrue(summary.contains("Creatinine clearance: 92.4000 mL/min"))
+        assertTrue(summary.contains("Elimination rate constant (Ke): 0.0800 /h"))
     }
 
     @Test

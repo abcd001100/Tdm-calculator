@@ -75,7 +75,7 @@ private fun inputValueLines(input: WorkflowInput): List<String> {
 
 private fun parameterLines(parameters: PharmacokineticParameters): List<String> {
     val lines = mutableListOf<String>()
-    parameters.creatinineClearanceMlPerMin?.let { lines += "Creatinine clearance: $it mL/min" }
+    parameters.creatinineClearanceMlPerMin?.let { lines += "Creatinine clearance: ${it.formatClinical()} mL/min" }
     lines += "Elimination rate constant (Ke): ${parameters.eliminationRateConstantPerHour.orDashText("/h")}"
     lines += "Elimination half-life: ${parameters.eliminationHalfLifeHours.orDashText("h")}"
     lines += "Volume of distribution (Vd): ${parameters.volumeOfDistributionL.orDashText("L")}"
@@ -83,4 +83,4 @@ private fun parameterLines(parameters: PharmacokineticParameters): List<String> 
     return lines
 }
 
-private fun Double?.orDashText(unit: String): String = this?.let { "$it $unit" } ?: "—"
+private fun Double?.orDashText(unit: String): String = this?.let { "${it.formatClinical()} $unit" } ?: "—"

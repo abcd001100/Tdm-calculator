@@ -141,4 +141,4 @@ private fun LabelledValue(label: String, value: String) {
     }
 }
 
-private fun Double?.orDash(unit: String): String = this?.let { "$it $unit" } ?: "—"
+private fun Double?.orDash(unit: String): String = this?.let { "${it.formatClinical()} $unit" } ?: "—"
